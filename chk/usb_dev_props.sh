@@ -16,14 +16,8 @@ function chk_usb_dev_props () {
     return 2
   fi
   # $DBGP "$DEV ?×$#"
-  [ -f "$DEV"/busnum ] || return 3
-  [ -f "$DEV"/devnum ] || return 3
-  local -A META=(
-    [busaddr]="$(cat -- "$DEV"busnum):$(cat -- "$DEV"devnum)"
-    )
-  META[descr]="$(LANG=C lsusb -s "${META[busaddr]}")"
-  # ^-- lsusb description: for devices that lack "manufacturer" or "product"
-  META[descr]="${META[descr]#* ID * }"
+  local -A META=()
+  chk_usb_dev_props__custom_meta "$DEV" dict_updkv META || return $?
   local OPT= ARG=
   for ARG in "$@"; do
     OPT="${ARG%=**}"; OPT="${OPT// /}"; ARG="${ARG#*=}"; ARG="${ARG# }"
@@ -35,3 +29,35 @@ function chk_usb_dev_props () {
   done
   return 0
 }
+
+
+function chk_usb_dev_props__custom_meta () {
+  local DEV="$1"; shift
+  case "$DEV" in
+    /* ) ;;
+    * )
+      echo "W: $FUNCNAME: device path must be absolute, not '$DEV'" >&2
+      return 4;;
+  esac
+  [ -f "$DEV"/busnum ] || return 3
+  [ -f "$DEV"/devnum ] || return 3
+
+  [ -n "$VNFMT" ] || local VNFMT=$'\v'
+  local PAIRS=()
+  [ -n "$1" ] || PAIRS+=( printf '%s=%s\n' )
+  local BUS_ADDR="$(cat -- "$DEV"/busnum):$(cat -- "$DEV"/devnum)"
+
+  # lsusb description: for devices that lack "manufacturer" or "product"
+  local DESCR="$(LANG=C lsusb -s "$BUS_ADDR")"
+  DESCR="${DESCR#* ID }"
+  DESCR="${DESCR# }"
+  DESCR="${DESCR% }"
+  PAIRS+=( "${VNFMT//$'\v'/descr}" "$DESCR" )
+
+  # sort busaddr last beacuse least interesting
+  PAIRS+=( "${VNFMT//$'\v'/busaddr}" "$BUS_ADDR" )
+  "$@" "${PAIRS[@]}"
+  return $?
+}
+
+
