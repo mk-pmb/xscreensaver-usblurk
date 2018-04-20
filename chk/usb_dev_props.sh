@@ -17,13 +17,15 @@ function chk_usb_dev_props () {
   fi
   # $DBGP "$DEV ?×$#"
   local -A META=()
-  chk_usb_dev_props__custom_meta "$DEV" dict_updkv META || return $?
   local OPT= ARG=
   for ARG in "$@"; do
     OPT="${ARG%=**}"; OPT="${OPT// /}"; ARG="${ARG#*=}"; ARG="${ARG# }"
     case "$OPT" in
       '' ) continue;;
-      %* ) chk_core_eq "$DEV$OPT" "${META[${OPT#\%}]}" "$ARG" || return 2;;
+      %* )
+        [ -n "${META[*]}" ] \
+          || chk_usb_dev_props__custom_meta "$DEV" dict_updkv META || return $?
+        chk_core_eq "$DEV$OPT" "${META[${OPT#\%}]}" "$ARG" || return 2;;
       * ) chk_file_data_eq "$DEV$OPT" "$ARG" || return 2;;
     esac
   done
