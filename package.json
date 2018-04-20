@@ -1,0 +1,24 @@
+{ "name": "xscreensaver-usblurk",
+  "version": "0.0.1",
+  "description": "Watch USB devices being (un)plugged, in order to lock or unlock xscreensaver based on whether configured token devices are present.",
+  "keywords": [ "usb", "inotify" ],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/xscreensaver-usblurk/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/xscreensaver-usblurk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/xscreensaver-usblurk/issues"
+  },
+  "contributors": [],
+
+  "private": false, "license": "ISC",
+
+  "scripts": { "start": "./lurk.sh" },
+  "directories": { "test": "test" },
+
+  
+  "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
+}
