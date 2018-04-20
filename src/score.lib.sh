@@ -49,3 +49,15 @@ function vchk () {
   echo "rv=$RV"
   return $RV
 }
+
+function chk_core_eq () {
+  local SUBJ="$1"; shift
+  local HAVE="$1"; shift
+  local WANT="$1"; shift
+  if [ "$HAVE" == "$WANT" ]; then
+    $DBGP "$SUBJ: = '$WANT'"
+    return 0
+  fi
+  $DBGP "$SUBJ: '$HAVE' != '$WANT'"
+  return 2
+}

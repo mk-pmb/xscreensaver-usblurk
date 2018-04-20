@@ -28,6 +28,7 @@ function lurk () {
   case "$RUNMODE" in
     '' | lurk ) ;;
     chk | vchk ) "$RUNMODE" "$@"; return $?;;
+    vvchk ) DBGP='debug_print' vchk "$@"; return $?;;
     debug-do ) "$@"; return $?;;
     * ) echo "E: unknown runmode: '$RUNMODE'" >&2; return 2;;
   esac
