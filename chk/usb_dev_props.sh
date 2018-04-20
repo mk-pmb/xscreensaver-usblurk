@@ -2,15 +2,25 @@
 # -*- coding: utf-8, tab-width: 2 -*-
 
 function chk_usb_dev_props () {
-  local USB_DEV=
-  for USB_DEV in /sys/bus/usb/devices/*/[0-9]*/; do
-    subchk_usb_dev_props__each "$USB_DEV" "$@" && return 0
+  local DEV="$1"
+  if [ "${DEV:0:1}" != / ]; then
+    $DBGP "* ?×$#"
+    for DEV in /sys/bus/usb/devices/*/[0-9]*/; do
+      "$FUNCNAME" "$DEV" "$@" && return 0
+    done
+    return 2
+  fi
+  shift
+  # $DBGP "$DEV ?×$#"
+  if [ -z "$*" ]; then
+    $DBGP "no criteria"
+    return 3
+  fi
+  local OPT= ARG=
+  for ARG in "$@"; do
+    OPT="${ARG%=**}"; OPT="${OPT// /}"; ARG="${ARG#*=}"; ARG="${ARG# }"
+    [ -n "$OPT" ] || continue
+    chk_file_data_eq "$DEV$OPT" "$ARG" || return 2
   done
-  return 3
-}
-
-
-function subchk_usb_dev_props__each () {
-  echo "W: $FUNCNAME: stub!" >&2
-  return 2
+  return 4
 }

@@ -8,12 +8,12 @@ function chk_ipv4_mac () {
     dfgw | default_gateway )
       IP="$(ip route list | grep -Pe '^default ' \
         | grep -oPe ' via \S+' | grep -oPe '\S+$')"
-      $DBGP "$FUNCNAME: dfgw = $IP"
+      $DBGP "dfgw = $IP"
       ;;
   esac
   [ -n "$IP" ] || return 2
   local MACS="$(chk_ipv4_mac__list)"
-  $DBGP "$FUNCNAME: macs: ${MACS//$'\n'/ }"
+  $DBGP "macs: ${MACS//$'\n'/ }"
   <<<"$MACS" grep -m 1 -qxFe "$IP=$ACCEPT"
 }
 

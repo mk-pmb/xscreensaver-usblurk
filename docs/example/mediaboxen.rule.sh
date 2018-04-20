@@ -17,7 +17,7 @@ chk usb_dev_props '
     idVendor      = 0000
     manufacturer  = C-Media Electronics Inc.
     product       = USB PnP Sound Device
-    serial        = 000000000000
+    serial |sha1  = 0000000000000000000000000000000000000000
     ' && \
 xsc_score +5
 

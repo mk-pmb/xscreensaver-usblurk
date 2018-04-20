@@ -11,15 +11,15 @@ function chk_disk_prtn () {
       uuid | label | id ) DISK="/dev/disk/by-$OPT/$ARG";;
     esac
     if [ ! -e "$DISK" ]; then
-      $DBGP "$FUNCNAME: $OPT $ARG not found"
+      $DBGP "$OPT $ARG not found"
       return 4
     fi
     DISK="$(readlink -m "$DISK")"
-    $DBGP "$FUNCNAME: $OPT $ARG = $DISK"
+    $DBGP "$OPT $ARG = $DISK"
     if [ -z "$SAME" ]; then
       SAME="$DISK"
     elif [ "$SAME" != "$DISK" ]; then
-      $DBGP "$FUNCNAME: != $SAME"
+      $DBGP "!= $SAME"
       return 5
     fi
   done

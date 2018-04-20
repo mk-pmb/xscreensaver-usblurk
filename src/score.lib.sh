@@ -14,12 +14,12 @@ function rescore () {
 function score_stable_accept () {
   local SCORE=
   local STABILITY=0
-  while [ "$STABILITY" -lt 20 ]; do
+  while [ "$STABILITY" -lt 4 ]; do
     SCORE=0
     rescore
     $DBGP "score=$SCORE stability=$STABILITY"
     [ "$SCORE" -ge 1 ] || return 3
-    sleep 0.1s
+    sleep 0.5s
     let STABILITY="$STABILITY+1"
   done
   return 0
@@ -37,11 +37,13 @@ function xsc_score () {
 function chk () {
   local CHK_ARGS=()
   IFS= readarray -t CHK_ARGS < <(printf '%s\n' "$@")
-  chk_"${CHK_ARGS[@]}"; return $?
+  local CHK_NAME="${CHK_ARGS[0]}"; shift
+  CHK_ARGS=( "${CHK_ARGS[@]:1}" )
+  DBGP="$DBGP $CHK_NAME:" chk_"$CHK_NAME" "${CHK_ARGS[@]}"; return $?
 }
 
 function vchk () {
-  echo -n "$FUNCNAME:"; printf ' ‹%s›' "$@"; echo -n ': '
+  echo -n "$FUNCNAME:"; printf ' ‹%s›' "$@"; echo :
   chk "$@"
   local RV=$?
   echo "rv=$RV"
