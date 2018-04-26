@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.9.4
+Type=Application
+Name=xscreensaver-usblurk
+Icon=system-lock-screen
+Comment=
+Exec=bash -c 'setsid ~/github_repos/mk-pmb/xscreensaver-usblurk/lurk.sh &>/dev/null &'
+StartupNotify=false
+Terminal=false
+Hidden=false

@@ -13,6 +13,8 @@ xsc_score +5
 
 chk hostname musicbox && \
 chk usb_dev_props '
+    # comments supported for this chk
+    # you can use `util/usb_dev_scan.sh` to find properties.
     idProduct     = 0000
     idVendor      = 0000
     manufacturer  = C-Media Electronics Inc.

@@ -54,7 +54,7 @@ function detect_config_dir () {
   case "$CFG_DIR" in
     xscreensaver-* ) CFG_DIR="${CFG_DIR/-//}";;
   esac
-  CFG_DIR="$HOME/.config/$CFG_DIR"
+  CFG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/$CFG_DIR"
   [ -d "$CFG_DIR" ] || return 4$(
     echo "E: config directory missing: $CFG_DIR" >&2)
   return 0
