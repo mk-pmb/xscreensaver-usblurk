@@ -1,5 +1,5 @@
 { "name": "xscreensaver-usblurk",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Watch USB devices being (un)plugged, in order to lock or unlock xscreensaver based on whether configured token devices are present.",
   "keywords": [ "usb", "inotify" ],
 

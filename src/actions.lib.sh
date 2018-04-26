@@ -31,7 +31,7 @@ function run_hooks () {
   export XSC_HOOK="$1"; shift
   local ITEM=
   cd "$CFG_DIR" || return $?
-  eval "${CFG[on_"$EVENT"]}"
+  eval "${CFG[on_"$XSC_HOOK"]}"
   cd "$CFG_DIR" || return $?
   for ITEM in ./*.on_"$XSC_HOOK".sh; do
     # ^-- ./ is to avoid searching $PATH
