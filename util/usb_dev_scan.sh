@@ -6,8 +6,9 @@ function usb_dev_scan () {
   export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
   local SELFPATH="$(readlink -m "$BASH_SOURCE"/..)"
   cd / || return $?
-  source "$SELFPATH"/../chk/usb_dev_props.sh || return $?
+  source "$SELFPATH"/../src/sysfs_devpaths.lib.sh || return $?
   source "$SELFPATH"/../src/bash-util.lib.sh || return $?
+  source "$SELFPATH"/../chk/usb_dev_props.sh || return $?
 
   local DEV=
   local KEY=
@@ -24,7 +25,11 @@ function usb_dev_scan () {
     idVendor
     removable
     )
-  for DEV in /sys/bus/usb/devices/[0-9]*/[0-9]*/; do
+
+  local MAYBE_DEVS=()
+  readarray -t MAYBE_DEVS < <(sysfs_devpaths_suggest)
+  for DEV in "${MAYBE_DEVS[@]}"; do
+    [ -d "$DEV" ] || continue
     VAL="$(VNFMT=$'%\v' chk_usb_dev_props__custom_meta "$DEV" printf "$KVFMT")"
     [ -n "$VAL" ] || continue
     echo "$DEV"

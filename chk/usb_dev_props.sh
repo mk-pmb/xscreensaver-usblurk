@@ -10,11 +10,14 @@ function chk_usb_dev_props () {
   fi
   if [ "${DEV:0:1}" != / ]; then
     $DBGP "* ?×$#"
-    for DEV in /sys/bus/usb/devices/[0-9]*/[0-9]*/; do
+    local MAYBE_DEVS=()
+    readarray -t MAYBE_DEVS < <(sysfs_devpaths_suggest)
+    for DEV in "${MAYBE_DEVS[@]}"; do
       "$FUNCNAME" "$DEV" "$@" && return 0
     done
     return 2
   fi
+  [ -d "$DEV" ] || return 2
   # $DBGP "$DEV ?×$#"
   local -A META=()
   local OPT= ARG=
