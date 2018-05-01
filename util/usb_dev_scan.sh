@@ -16,7 +16,7 @@ function usb_dev_scan () {
   local BUS_ADDR=
   local DESCR=
   # ^-- lsusb description, for devices that lack "manufacturer" or "product"
-  local KVFMT='    %- 20s = ‹%s›\n'
+  local KVFMT='    %- 20s = ‹%s›'
   local PRIO_KEYS=(
     manufacturer
     product
@@ -30,7 +30,8 @@ function usb_dev_scan () {
   readarray -t MAYBE_DEVS < <(sysfs_devpaths_suggest)
   for DEV in "${MAYBE_DEVS[@]}"; do
     [ -d "$DEV" ] || continue
-    VAL="$(VNFMT=$'%\v' chk_usb_dev_props__custom_meta "$DEV" printf "$KVFMT")"
+    VAL="$(VNFMT=$'%\v' chk_usb_dev_props__custom_meta "$DEV" \
+      printf "$KVFMT"'\n')"
     [ -n "$VAL" ] || continue
     echo "$DEV"
     echo "$VAL"
@@ -57,7 +58,12 @@ function usb_dev_scan () {
       esac
       VAL="$(cat -- "$DEV/$KEY")"
       VAL="${VAL//$'\n'/¶ }"
-      printf "$KVFMT" "$KEY" "$VAL"
+      printf -v VAL "$KVFMT" "$KEY" "$VAL"
+      case "$KEY" in
+        bcdDevice ) VAL+='  # aka firmware version';;
+        urbnum ) VAL+='  # activity meter, see docs';;
+      esac
+      echo "$VAL"
     done
     echo
   done
