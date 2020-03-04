@@ -5,12 +5,12 @@ function xsc_lock () {
   # LANG=C xscreensaver-command -time | grep -Fe ' screen locked ' && return 0
   # ^-- nope: reports screen locked even after we kill-HUP-ed xsc,
   #     even if it was "-restart"ed
-  $DBG xscreensaver-command -lock >/dev/null
+  $DEBUG_SKIP xscreensaver-command -lock >/dev/null
   run_hooks lock
 }
 
 function xsc_unlock () {
-  $DBG killall -HUP xscreensaver
+  $DEBUG_SKIP killall -HUP xscreensaver
   run_hooks unlock
 }
 
@@ -30,14 +30,13 @@ function add_hook () {
 function run_hooks () {
   export XSC_HOOK="$1"; shift
   local ITEM=
-  cd "$CFG_DIR" || return $?
+  cd -- "$CFG_DIR" || return $?
   eval "${CFG[on_"$XSC_HOOK"]}"
-  cd "$CFG_DIR" || return $?
+  cd -- "$CFG_DIR" || return $?
   for ITEM in ./*.on_"$XSC_HOOK".sh; do
     # ^-- ./ is to avoid searching $PATH
     [ -f "$ITEM" ] || continue
-    $DBG source "$ITEM"
-    cd "$CFG_DIR" || return $?
+    $DEBUG_SKIP source -- "$ITEM"
+    cd -- "$CFG_DIR" || return $?
   done
-  return 0
 }

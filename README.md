@@ -37,13 +37,21 @@ Install
 
 &nbsp;
 
-Test rules files
-----------------
-
-To verify your rules, you can run `lurk.sh` in debug mode:
+Test your rules
+---------------
 
 ```bash
-DEBUGLEVEL=4 ./lurk.sh
+# Test all your rules, with debug messages:
+./lurk.sh debug_rules
+
+# Test a single rule with no output, just exit status:
+./lurk.sh chk   hostname foo,bar
+
+# Print what checks are run, and also print the exit status:
+./lurk.sh vchk  hostname foo,bar
+
+# … and also print debug messages:
+./lurk.sh vvchk hostname foo,bar
 ```
 
 

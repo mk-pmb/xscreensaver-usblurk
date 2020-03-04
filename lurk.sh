@@ -10,9 +10,9 @@ function lurk () {
   [ -n "$USER" ] || export USER="$(whoami)"
   [ -n "$HOSTNAME" ] || export HOSTNAME="$(hostname --short)"
 
-  local DBG=
-  [ "${DEBUGLEVEL:-0}" -ge 1 ] && DBG='debug_print'
-  local DBGP="${DBG:-false}"
+  local NOOP_CMD='true'
+  local DEBUG_SKIP= DBGP="$NOOP_CMD"
+  [ "${DEBUGLEVEL:-0}" -ge 1 ] && enable_debug_mode
   local PROGNAME CFG_DIR; detect_config_dir || return $?
 
   local ITEM=
@@ -27,8 +27,9 @@ function lurk () {
 
   case "$RUNMODE" in
     '' | lurk ) ;;
+    debug_rules | \
     chk | vchk ) "$RUNMODE" "$@"; return $?;;
-    vvchk ) DBGP='debug_print' vchk "$@"; return $?;;
+    vvchk ) enable_debug_mode; vchk "$@"; return $?;;
     debug-do ) "$@"; return $?;;
     * ) echo "E: unknown runmode: '$RUNMODE'" >&2; return 2;;
   esac
@@ -43,7 +44,22 @@ function lurk () {
     sleep 0.2s  # <- opportunity for Ctrl+C even if lurk_loop fails rapidly
   done
   $DBGP "loop end"
-  return 0
+}
+
+
+function debug_print () { echo "D: $*" >&2; }
+
+
+function enable_debug_mode () {
+  DBGP='debug_print'
+  DEBUG_SKIP="$DBGP skip (would do):"
+}
+
+
+function debug_rules () {
+  enable_debug_mode
+  rescore
+  return $?
 }
 
 
@@ -59,9 +75,6 @@ function detect_config_dir () {
     echo "E: config directory missing: $CFG_DIR" >&2)
   return 0
 }
-
-
-function debug_print () { echo "D: $*" >&2; }
 
 
 function lurk_lurk () {

@@ -2,27 +2,27 @@
 
 function rescore () {
   local ITEM=
+  SCORE=0
   for ITEM in "$CFG_DIR"/*.rule.sh; do
     [ -f "$ITEM" ] || continue
-    source "$ITEM" && continue
+    source -- "$ITEM" && continue
     echo "E: score reset due to rule failure: $ITEM" >&2
     SCORE=0
     return 2
   done
+  $DBGP "score=$SCORE stability=$STABILITY"
 }
 
 function score_stable_accept () {
   local SCORE=
   local STABILITY=0
-  while [ "$STABILITY" -lt 4 ]; do
-    SCORE=0
+  local MIN_STAB="${XSCLURK_ACCEPTABLE_SCORE_STABILITY:-4}"
+  while [ "$STABILITY" -lt "$MIN_STAB" ]; do
     rescore
-    $DBGP "score=$SCORE stability=$STABILITY"
     [ "$SCORE" -ge 1 ] || return 3
     sleep 0.5s
     let STABILITY="$STABILITY+1"
   done
-  return 0
 }
 
 function xsc_score () {

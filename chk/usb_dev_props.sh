@@ -5,16 +5,19 @@ function chk_usb_dev_props () {
   local DEV="$1"
   [ "${DEV:0:1}" == / ] && shift
   if [ -z "$*" ]; then
-    $DBGP "${DEV:-*}: no criteria"
+    $DBGP "device ${DEV:-(any)}: no criteria given!"
     return 3
   fi
   if [ "${DEV:0:1}" != / ]; then
-    $DBGP "* ?×$#"
+    $DBGP "searching for any device matching these criteria: $*"
     local MAYBE_DEVS=()
     readarray -t MAYBE_DEVS < <(sysfs_devpaths_suggest)
     for DEV in "${MAYBE_DEVS[@]}"; do
-      "$FUNCNAME" "$DEV" "$@" && return 0
+      "$FUNCNAME" "$DEV" "$@" || continue
+      $DBGP "Found acceptable device $DEV" || continue
+      return 0
     done
+    $DBGP "Found no such device." || continue
     return 2
   fi
   [ -d "$DEV" ] || return 2

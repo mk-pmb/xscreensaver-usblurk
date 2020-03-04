@@ -3,7 +3,10 @@
 
 function chk_hostname () {
   case ",$*," in
-    *,"$HOSTNAME",* ) return 0;;
+    *,"$HOSTNAME",* )
+      $DBGP "hostname '$HOSTNAME' found in whitelist"
+      return 0;;
   esac
+  $DBGP "hostname '$HOSTNAME' NOT found in whitelist"
   return 3
 }
